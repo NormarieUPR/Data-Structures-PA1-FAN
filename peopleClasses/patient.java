@@ -1,3 +1,6 @@
+package peopleClasses;
+import ENUMS.Priority;
+
 public class patient extends person {
     protected Priority priority;
     protected final long arrivalOrder;
@@ -7,5 +10,7 @@ public class patient extends person {
         this.priority = priority;
         this.arrivalOrder = arrivalOrder;
     }
-    
+    public Priority getPriority() {
+        return priority;
+    }
 }

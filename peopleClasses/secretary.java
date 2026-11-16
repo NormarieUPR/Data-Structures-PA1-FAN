@@ -1,3 +1,6 @@
+package peopleClasses;
+import ENUMS.Role;
+
 public class secretary extends employee{
     protected Role role;
     

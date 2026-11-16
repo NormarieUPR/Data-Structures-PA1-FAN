@@ -1,3 +1,4 @@
+package peopleClasses;
 public class person {
     protected final int id;
     protected final String name;

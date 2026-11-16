@@ -1,3 +1,5 @@
+package peopleClasses;
+import ENUMS.Specialty;
 public class doctor extends person {
     protected final Specialty specialty;
     protected Boolean available; 
