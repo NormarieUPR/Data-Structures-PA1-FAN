@@ -1,4 +1,4 @@
-public class secretary extends person{
+public class secretary extends employee{
     protected Role role;
     
     secretary(int id, String name, Role role){

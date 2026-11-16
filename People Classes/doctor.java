@@ -11,4 +11,10 @@ public class doctor extends person {
     public Specialty getSpecialty(){
         return this.specialty;
     }
+    public boolean isAvailable() {
+        return available; 
+    } 
+     public void setAvailable(boolean available) {
+        this.available = available;
+    } 
 }
