@@ -1,4 +1,6 @@
 import java.util.*;
+import ENUMS.*;
+import peopleClasses.*;
 public class medical_office{
     //Creating a Hashmap for all different types of people
     private final Map<String, doctor> doctors = new HashMap<>();
