@@ -1,7 +1,4 @@
 import java.util.Scanner;
-import java.time.LocalDateTime;
-import ENUMS.*;
-import misc.*;
 
 public class Main{
     public static void main(String[] args){
@@ -108,8 +105,18 @@ public class Main{
     // -> print App ID (or fail, pick another time etc)
     private static void secCancel(MedicalOffice office, Scanner scanner) {}
     // read app ID -> office.cancelApp -> print result
-    private static void secCheckIn(MedicalOffice office, Scanner scanner) {}
+
     // ask for patient -> office.checkin(id) -> print place in line
+    private static void secCheckIn(MedicalOffice office, Scanner scanner) {
+        int id = readInt(scanner, "Patient ID: ");
+        if (office.checkIn(id)) {
+            int place = office.showWaitingPatients().size();
+            System.out.println("Patient " + id + " checked in. Place in line: " + place);
+        } else {
+            System.out.println("Could not check in: patient not registered or already waiting.");
+        }
+    }
+
     private static void secEmergency(MedicalOffice office, Scanner scanner) {}
     // ask for patient -> office.addEmergency(id)
     private static void secToday(MedicalOffice office, Scanner scanner) {}
