@@ -46,7 +46,15 @@ public class MedicalOffice{
         return true;
     }
 
-    public void addToWaitingList(Patient patient){}
+    // Adds patient to the line depending on their Priority
+    public void addToWaitingList(Patient patient){
+        if (patient.getPriority() == Priority.EMERGENCY) {
+            emergencyQueue.offer(patient);
+        } else {
+            waitingQueue.offer(patient);
+        }
+        waitingIds.add(patient.getId());
+    }
     public Patient attendNextPatient() { return null;}
     public Patient assignPatientToDoc(int doctorID){
         return null;
