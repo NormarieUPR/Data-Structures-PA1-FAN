@@ -1,12 +1,12 @@
 package peopleClasses;
-import java.util.List;
-import java.util.ArrayList;
 import ENUMS.Priority;
+import java.util.ArrayList;
+import java.util.List;
 import misc.*;
 
 public class Patient extends Person {
     protected Priority priority;
-    protected final long arrivalOrder;
+    protected long arrivalOrder;
     protected final List<Appointment> history;
     
     public Patient(int id, String name, Priority priority, long arrivalOrder){
@@ -16,6 +16,7 @@ public class Patient extends Person {
         this.history = new ArrayList<>();
     }
 
+    // getters
     public Priority getPriority() {
         return priority;
     }
@@ -24,6 +25,19 @@ public class Patient extends Person {
         return arrivalOrder;    
     }
 
+    // setters
+    public void setArrivalOrder(long arrivalOrder) {
+        this.arrivalOrder = arrivalOrder;
+    }
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
+    @Override 
+    public String toString() {
+        return "#" + id + " " + name + " (" + priority + ")";
+    }
+    
     public List<Appointment> getHistory() {
         return history;
     }
