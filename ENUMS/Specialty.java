@@ -1,4 +1,4 @@
 package ENUMS;
 public enum Specialty {
-    oftalmologoGeneral, oftalmologPediatrico, neuro_oftalmologo, retinologo
+    OFTALMOLOGO_GENERAL, OFTALMOLOGO_PEDIATRICO, NEURO_OFTALMOLOGO, RETINOLOGO
 }

@@ -1,9 +1,9 @@
 package peopleClasses;
-public class person {
+public abstract class Person {
     protected final int id;
     protected final String name;
 
-    public person(int id, String name){
+    public Person(int id, String name){
         this.id = id;
         this.name = name;
     }

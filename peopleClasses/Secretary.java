@@ -1,10 +1,10 @@
 package peopleClasses;
 import ENUMS.Role;
 
-public class secretary extends employee{
+public class Secretary extends Employee{
     protected Role role;
     
-    secretary(int id, String name, Role role){
+    public Secretary(int id, String name, Role role){
         super(id, name);
         this.role = role;
     }

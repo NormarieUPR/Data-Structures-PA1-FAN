@@ -1,10 +1,10 @@
 package peopleClasses;
 import ENUMS.Specialty;
-public class doctor extends person {
+public class Doctor extends Employee {
     protected final Specialty specialty;
-    protected Boolean available; 
+    protected boolean available; 
     
-    public doctor(int id, String name, Specialty specialty, Boolean available){
+    public Doctor(int id, String name, Specialty specialty, boolean available){
         super(id,name);
         this.specialty = specialty; 
         this.available = available; 
