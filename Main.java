@@ -1,7 +1,9 @@
+import java.util.List;
 import java.util.Scanner;
 import java.time.LocalDateTime;
 import ENUMS.*;
-import misc.;
+import misc.*;
+import peopleClasses.*;
 
 public class Main{
     public static void main(String[] args){
@@ -124,8 +126,20 @@ public class Main{
     // ask for patient -> office.addEmergency(id)
     private static void secToday(MedicalOffice office, Scanner scanner) {}
     // office.getToday() -> print
-    private static void nurWaiting(MedicalOffice office, Scanner scanner) {}
+
     // office.getWaiting() -> print
+    private static void nurWaiting(MedicalOffice office, Scanner scanner) {
+        List<Patient> waiting = office.showWaitingPatients();
+        if (waiting.isEmpty()) {
+            System.out.println("No patients waiting.");
+            return;
+        }
+        System.out.println("Waiting patients (in call order):");
+        for (int i = 0; i < waiting.size(); i++) {
+            System.out.println((i + 1) + ". " + waiting.get(i));
+        }
+    }
+
     private static void nurAvailableDoctors(MedicalOffice office, Scanner scanner) {}
     // office.getAvailable() -> print each
     private static void nurFindBySpecialty(MedicalOffice office, Scanner scanner) {}
