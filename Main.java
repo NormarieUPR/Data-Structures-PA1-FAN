@@ -1,4 +1,7 @@
 import java.util.Scanner;
+import java.time.LocalDateTime;
+import ENUMS.*;
+import misc.;
 
 public class Main{
     public static void main(String[] args){
@@ -106,7 +109,7 @@ public class Main{
     private static void secCancel(MedicalOffice office, Scanner scanner) {}
     // read app ID -> office.cancelApp -> print result
 
-    // ask for patient -> office.checkin(id) -> print place in line
+    // ask for patient -> office.checkIn(id) -> print place in line
     private static void secCheckIn(MedicalOffice office, Scanner scanner) {
         int id = readInt(scanner, "Patient ID: ");
         if (office.checkIn(id)) {
