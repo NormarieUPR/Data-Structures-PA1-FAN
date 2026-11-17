@@ -31,7 +31,7 @@ public class Appointment{
         return this.doctorId;
     }
 
-    public LocalDateTime getAppointmentTime() {
+    public LocalDateTime getTime() {
         return this.time;
     }
 

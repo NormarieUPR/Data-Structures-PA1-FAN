@@ -1,7 +1,7 @@
 package peopleClasses;
 import java.util.List;
 import java.util.ArrayList;
-import ENUMS.Priority;
+import ENUMS.*;
 import misc.*;
 
 public class Patient extends Person {
@@ -26,5 +26,13 @@ public class Patient extends Person {
 
     public List<Appointment> getHistory() {
         return history;
+    }
+
+    public void addToHistory(Appointment a) {
+        history.add(a);
+    }
+
+    public void removeFromHistory(Appointment a) {
+        history.remove(a);
     }
 }
