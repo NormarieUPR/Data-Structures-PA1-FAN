@@ -11,21 +11,25 @@ public class MedicalOffice{
     private final Map<Integer, Nurse> nurses = new HashMap<>();
     private final Map<Integer, Secretary> secretaries = new HashMap<>();
 
+    // per doctor availability
+
     // Avoid duplicate patients with hashset
     private final Set<Integer> registeredPatientsID = new HashSet<>();
+
     // Queues
     private final Queue<Patient> waitingQueue = new ArrayDeque<>();
     private final PriorityQueue<Patient> emergencyQueue = new PriorityQueue<>(Comparator.comparing(Patient::getPriority).reversed()
             .thenComparingLong(Patient::getArrivalOrder)); // order by priority first; then by arrival order
-
+                                                           
     //HashSet with IDs of patients currently waiting
     private final Set<Integer> waitingIds = new HashSet<>();
 
-    // Appointments
+    // Appointments by their ID
     private final Map<Integer, Appointment> appointments = new HashMap<>();
 
-    // Orden de llegada
+    // Counters
     private long arrivalCounter = 0;
+    private int appointmentCounter = 0;
 
     // Employees Operations
     public void addDoctor(Doctor doctor){ }
@@ -88,23 +92,44 @@ public class MedicalOffice{
 
     // Citas
     public Appointment scheduleAppointment(int patientId, int doctorId, LocalDateTime time) { 
+        // validate appointment
         if (time == null || time.isBefore(LocalDateTime.now().plusMinutes(1))) {
             throw new IllegalArgumentException("Invalid time");
+        }
+
+        if (time.getMinute() % 30 != 0) {
+            throw new IllegalArgumentException("Appointments start on the hour or half hour");
         }
 
         if (!patients.containsKey(patientId)) {
             throw new IllegalArgumentException("Patient not found"); 
         }
             
-        if (!doctors.containsKey(doctorId)) {
-            throw new IllegalArgumentException("Doctor not found");
+        Doctor doc = doctors.get(doctorId);
+        if (doc == null) throw new IllegalArgumentException("Doctor not found");
+
+        if (doc.hasAppointmentAt(time)) {
+            throw new IllegalArgumentException("Conflicts with doctor schedule");
         }
 
-        int appointmentId = 1;
+        // create appointment
+        int id = ++appointmentCounter;
+        Appointment app = new Appointment(id, patientId, doctorId, time);
 
-        return new Appointment(appointmentId, patientId, doctorId, time); 
+        // update appointment & history lists
+        appointments.put(id, app);
+        doc.addToSchedule(app);
+        patients.get(patientId).addToHistory(app);
+
+        return app; 
     } 
-    public boolean cancelAppointment(int appointmentId) { return false; }      
+    public void cancelAppointment(int appointmentId) {
+        Appointment app = appointments.get(appointmentId);
+        if (app == null) throw new IllegalArgumentException("Appointment not found");
+        if (app.getStatus() != Appointment.Status.SCHEDULED) throw new IllegalArgumentException("Only scheduled appointments can be canceled");
+        doctors.get(app.getDoctorId()).removeFromSchedule(app);
+        app.setStatus(Appointment.Status.CANCELED);
+    }      
     public List<Appointment> showPatientHistory(int patientId) { return null; } 
     public List<Appointment> showTodayAppointments() { return null; }       
 
