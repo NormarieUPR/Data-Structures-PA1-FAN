@@ -96,21 +96,38 @@ public class Main{
     }
 
     // --------------------------------Tools--------------------------------
+    // read input, call office method, print
     
     private static void secRegisterPatient(MedicalOffice office, Scanner scanner) {}
+    // read name -> office.registerPatient(name) -> print ID
     private static void secRegisterEmployee(MedicalOffice office, Scanner scanner) {}
+    // choose employee type, read name (and specialty) -> call office.hire/registeremployee() -> print ID
     private static void secSchedule(MedicalOffice office, Scanner scanner) {}
+    // ask for patient -> choose specialty -> list doctors -> pick one
+    // -> read date -> show that doctors day -> read time -> office.scheduleApp
+    // -> print App ID (or fail, pick another time etc)
     private static void secCancel(MedicalOffice office, Scanner scanner) {}
+    // read app ID -> office.cancelApp -> print result
     private static void secCheckIn(MedicalOffice office, Scanner scanner) {}
+    // ask for patient -> office.checkin(id) -> print place in line
     private static void secEmergency(MedicalOffice office, Scanner scanner) {}
+    // ask for patient -> office.addEmergency(id)
     private static void secToday(MedicalOffice office, Scanner scanner) {}
+    // office.getToday() -> print
     private static void nurWaiting(MedicalOffice office, Scanner scanner) {}
+    // office.getWaiting() -> print
     private static void nurAvailableDoctors(MedicalOffice office, Scanner scanner) {}
+    // office.getAvailable() -> print each
     private static void nurFindBySpecialty(MedicalOffice office, Scanner scanner) {}
+    // choose specialty -> office.findDoctorsBySpecialty -> print each
     private static void docAvailability(MedicalOffice office, Scanner scanner) {}
+    // read doctor ID -> toggle/set
     private static void docAttendNext(MedicalOffice office, Scanner scanner) {}
+    // read doctor ID -> office.assignNextPatient(doctorID) -> print who (emergency first)
     private static void docRegisterVisit(MedicalOffice office, Scanner scanner) {}
+    // read doctor ID + patient ID -> office.registerVisit()
     private static void patientHistory(MedicalOffice office, Scanner scanner) {}
+    // read patient ID -> office.getHistory(id) -> print each
     
     // --------------------------------Misc--------------------------------
 
