@@ -1,31 +1,34 @@
 import java.util.*;
+import java.time.LocalDateTime;
 import ENUMS.*;
 import peopleClasses.*;
-public class MedicalOffice{
-    //Creating a Hashmap for all different types of people
-    private final Map<String, Doctor> doctors = new HashMap<>();
-    private final Map<String, Patient> patients = new HashMap<>();
-    private final Map<String, Nurse> nurses = new HashMap<>();
-    private final Map<String, Secretary> secretaries = new HashMap<>();
+import misc.*;
 
-    //avoid duplicate patients with hashset
+public class MedicalOffice{
+    // Creating a Hashmap for all different types of people
+    private final Map<Integer, Doctor> doctors = new HashMap<>();
+    private final Map<Integer, Patient> patients = new HashMap<>();
+    private final Map<Integer, Nurse> nurses = new HashMap<>();
+    private final Map<Integer, Secretary> secretaries = new HashMap<>();
+
+    // Avoid duplicate patients with hashset
     private final Set<Integer> registeredPatientsID = new HashSet<>();
-    //queues
+    // Queues
     private final Queue<Patient> waitingQueue = new ArrayDeque<>();
     private final PriorityQueue<Patient> emergencyQueue = new PriorityQueue<>(Comparator.comparing(Patient::getPriority).reversed()
             .thenComparingLong(Patient::getArrivalOrder)); // order by priority first; then by arrival order
-    //Appoitment
-    private final Map<String, appointment> appointments = new HashMap<>();
+    // Appointments
+    private final Map<Integer, Appointment> appointments = new HashMap<>();
 
-    //orden de llegada
+    // Orden de llegada
     private long arrivalCounter = 0;
 
     // Employees Operations
     public void addDoctor(Doctor doctor){ }
-    public void removeDoctor(Integer doctorId) {}
+    public void removeDoctor(int doctorId) {}
     public void registerEmployee(Employee employee) { }
 
-    //Pacients
+    // Patients
     public boolean registerPatient(Patient patient){
         return false;
     }
@@ -35,7 +38,7 @@ public class MedicalOffice{
         return null;
     }
 
-    public void registerVisit(String patientID, String doctorId){}
+    public void registerVisit(int patientID, int doctorId){}
     public List<Patient> showWaitingPatients(){return null;}
 
     // Search
@@ -46,9 +49,25 @@ public class MedicalOffice{
     public List<Doctor> showAvailableDoctors(){return null;}
 
     // Citas
-    public boolean scheduleAppointment(appointment appointment) { return false; } 
-    public boolean cancelAppointment(String appointmentId) { return false; }      
-    public List<appointment> showPatientHistory(String patientId) { return null; } 
-    public List<appointment> showTodayAppointments() { return null; }       
+    public Appointment scheduleAppointment(int patientId, int doctorId, LocalDateTime time) { 
+        if (time == null || time.isBefore(LocalDateTime.now().plusMinutes(1))) {
+            throw new IllegalArgumentException("Invalid time");
+        }
+
+        if (!patients.containsKey(patientId)) {
+            throw new IllegalArgumentException("Patient not found"); 
+        }
+            
+        if (!doctors.containsKey(doctorId)) {
+            throw new IllegalArgumentException("Doctor not found");
+        }
+
+        int appointmentId = 1;
+
+        return new Appointment(appointmentId, patientId, doctorId, time); 
+    } 
+    public boolean cancelAppointment(int appointmentId) { return false; }      
+    public List<Appointment> showPatientHistory(int patientId) { return null; } 
+    public List<Appointment> showTodayAppointments() { return null; }       
 
 }
