@@ -1,7 +1,9 @@
+import java.util.List;
 import java.util.Scanner;
 import java.time.LocalDateTime;
 import ENUMS.*;
 import misc.*;
+import peopleClasses.*;
 
 public class Main{
     public static void main(String[] args){
@@ -108,14 +110,36 @@ public class Main{
     // -> print App ID (or fail, pick another time etc)
     private static void secCancel(MedicalOffice office, Scanner scanner) {}
     // read app ID -> office.cancelApp -> print result
-    private static void secCheckIn(MedicalOffice office, Scanner scanner) {}
-    // ask for patient -> office.checkin(id) -> print place in line
+
+    // ask for patient -> office.checkIn(id) -> print place in line
+    private static void secCheckIn(MedicalOffice office, Scanner scanner) {
+        int id = readInt(scanner, "Patient ID: ");
+        if (office.checkIn(id)) {
+            int place = office.showWaitingPatients().size();
+            System.out.println("Patient " + id + " checked in. Place in line: " + place);
+        } else {
+            System.out.println("Could not check in: patient not registered or already waiting.");
+        }
+    }
+
     private static void secEmergency(MedicalOffice office, Scanner scanner) {}
     // ask for patient -> office.addEmergency(id)
     private static void secToday(MedicalOffice office, Scanner scanner) {}
     // office.getToday() -> print
-    private static void nurWaiting(MedicalOffice office, Scanner scanner) {}
+
     // office.getWaiting() -> print
+    private static void nurWaiting(MedicalOffice office, Scanner scanner) {
+        List<Patient> waiting = office.showWaitingPatients();
+        if (waiting.isEmpty()) {
+            System.out.println("No patients waiting.");
+            return;
+        }
+        System.out.println("Waiting patients (in call order):");
+        for (int i = 0; i < waiting.size(); i++) {
+            System.out.println((i + 1) + ". " + waiting.get(i));
+        }
+    }
+
     private static void nurAvailableDoctors(MedicalOffice office, Scanner scanner) {}
     // office.getAvailable() -> print each
     private static void nurFindBySpecialty(MedicalOffice office, Scanner scanner) {}
