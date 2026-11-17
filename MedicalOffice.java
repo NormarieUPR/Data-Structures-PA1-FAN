@@ -61,7 +61,20 @@ public class MedicalOffice{
     }
 
     public void registerVisit(String patientID, String doctorId){}
-    public List<Patient> showWaitingPatients(){return null;}
+
+    // Wait list in order they'll be called
+    public List<Patient> showWaitingPatients(){
+        List<Patient> list = new ArrayList<>();
+
+        //emergencies first, in priority order
+        PriorityQueue<Patient> copy = new PriorityQueue<>(emergencyQueue);
+        while(!copy.isEmpty()) {
+            list.add(copy.poll());
+        }
+        // normal line in arrival order
+        list.addAll(waitingQueue);
+        return list;
+    }
 
     // Search
     public List<Doctor> findDoctorsBySpecialty(Specialty specialty){
