@@ -1,11 +1,8 @@
 package peopleClasses;
-import ENUMS.Role;
 
 public class Nurse extends Employee{
-    protected Role role;
 
-    public Nurse(int id, String name, Role role){
+    public Nurse(int id, String name){
         super(id, name);
-        this.role = role;
     }
 }

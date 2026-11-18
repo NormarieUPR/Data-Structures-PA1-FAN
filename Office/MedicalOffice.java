@@ -1,3 +1,4 @@
+package Office;
 import ENUMS.*;
 import java.util.*;
 import peopleClasses.*;
@@ -14,7 +15,7 @@ public class MedicalOffice{
     // per doctor availability
 
     // Avoid duplicate patients with hashset
-    private final Set<Integer> registeredPatientsID = new HashSet<>();
+    //private final Set<Integer> registeredPatientsID = new HashSet<>(); sacar since ya resolvimos el problema 
 
     // Queues
     private final Queue<Patient> waitingQueue = new ArrayDeque<>();
@@ -32,13 +33,43 @@ public class MedicalOffice{
     private int appointmentCounter = 0;
 
     // Employees Operations
+    private int nextEmployeeId = 1; //reserved 1-200 for employees
+    private int nextEmployeeId(){
+        if (nextEmployeeId > 200){
+            throw new IllegalStateException("NO staff IDs left");
+        }
+        return nextEmployeeId++;
+    }
     public void addDoctor(Doctor doctor){ }
     public void removeDoctor(int doctorId) {}
-    public void registerEmployee(Employee employee) { }
+    public Employee registerEmployee(String name, Roles role, Specialty specialty) { 
+        int id = nextEmployeeId();
+        if(role == Roles.SECRETARY){
+            Secretary s = new Secretary(id, name);
+            secretaries.put(id, s);
+            return s;
+        }
+        else if(role == Roles.DOCTOR){
+            Doctor d = new Doctor(id, name, specialty, false);
+            doctors.put(id, d);
+            return d;
+        }
+        else if(role == Roles.NURSE){
+            Nurse n = new Nurse(id, name);
+            nurses.put(id, n);
+            return n;
+        }
+        throw new IllegalArgumentException("Unknown role " + role);
+     }
 
     // Patients
-    public boolean registerPatient(Patient patient){
-        return false;
+    private int nextPatientId = 201; //ID 101 and up are for patients
+    public Patient registerPatient(String name, Priority priority){
+        int id = nextPatientId++;
+        Patient p = new Patient(id, name, priority, 0);
+        patients.put(id,p);
+        return p;
+
     }
 
     // Secretary checks patients in
