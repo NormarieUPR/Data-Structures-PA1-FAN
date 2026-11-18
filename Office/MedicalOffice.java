@@ -77,8 +77,8 @@ public class MedicalOffice{
         Patient p = patients.get(patientID);
         if (p == null) return false;
         if (waitingIds.contains(patientID)) return false;
-
-        p.setPriority(Priority.NORMAL);
+ 
+        p.setPriority(Priority.NORMAL); //idk if to delete cuz ya en register estoy pidiendo el type of visit lmk q piensas
         p.setArrivalOrder(arrivalCounter++);
         addToWaitingList(p);
         return true;
