@@ -168,11 +168,43 @@ public class Main{
             System.out.println((i + 1) + ". " + waiting.get(i));
         }
     }
+   // office.getAvailable() -> print each
+    private static void nurAvailableDoctors(MedicalOffice office, Scanner scanner) {
+        List<Doctor> available = office.showAvailableDoctors();
+        if(available.isEmpty()){
+            System.out.println("There are no doctors available at the moment");
+            return;
+        }
+        System.out.println("Doctor Available at the moment:");
+        for(Doctor d: available){
+            System.out.println("ID: " + d.getId() + " Name: "+ d.getName()+ " Specialty: "+ d.getSpecialty());
+        }
 
-    private static void nurAvailableDoctors(MedicalOffice office, Scanner scanner) {}
-    // office.getAvailable() -> print each
-    private static void nurFindBySpecialty(MedicalOffice office, Scanner scanner) {}
+    }
     // choose specialty -> office.findDoctorsBySpecialty -> print each
+
+    private static void nurFindBySpecialty(MedicalOffice office, Scanner scanner) {
+        int choice = readMenu(scanner, "Specialty", "General", "Pediatric", "Neuro-opthalmologist", "Retinologist");
+        Specialty specialty = switch (choice){
+            case 1 -> Specialty.OFTALMOLOGO_GENERAL;
+            case 2 -> Specialty.OFTALMOLOGO_PEDIATRICO;
+            case 3 -> Specialty.NEURO_OFTALMOLOGO;
+            case 4 -> Specialty.RETINOLOGO;
+            default ->Specialty.OFTALMOLOGO_GENERAL;
+        };
+
+        List<Doctor> doctors = office.findDoctorsBySpecialty(specialty);
+        if(doctors.isEmpty()){
+            System.out.println("No doctors with that specialty");
+            return;
+        }
+        System.out.print("Doctors with that specialty");
+        for(Doctor d: doctors){
+            String status = d.isAvailable() ? "available" : "not available";
+            System.out.println("ID: " + d.getId() + " Name: " + d.getName() + " (" + status + ")");
+
+        }
+    }
     private static void docAvailability(MedicalOffice office, Scanner scanner) {}
     // read doctor ID -> toggle/set
     private static void docAttendNext(MedicalOffice office, Scanner scanner) {}

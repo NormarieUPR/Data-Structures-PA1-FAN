@@ -116,10 +116,25 @@ public class MedicalOffice{
 
     // Search
     public List<Doctor> findDoctorsBySpecialty(Specialty specialty){
-        return null;
+        List<Doctor> result = new ArrayList<>();
+        for(Doctor d: doctors.values()){
+            if(d.getSpecialty() == specialty){
+                result.add(d);
+            }
+        }
+        return result;
     }
 
-    public List<Doctor> showAvailableDoctors(){return null;}
+    public List<Doctor> showAvailableDoctors(){
+        System.out.print("Doctors Available at the moment:");
+        ArrayList<Doctor> availableDoctors = new ArrayList<Doctor>();
+        for(Doctor doctor : doctors.values()){
+            if(doctor.isAvailable()){
+                availableDoctors.add(doctor);
+            }
+        }
+        return availableDoctors;
+    }
 
     // Citas
     public Appointment scheduleAppointment(int patientId, int doctorId, LocalDateTime time) { 
