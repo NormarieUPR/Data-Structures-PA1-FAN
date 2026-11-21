@@ -1,11 +1,11 @@
 package peopleClasses;
-import ENUMS.Role;
+import java.util.Scanner;
 
+import ENUMS.Priority;
+import Office.MedicalOffice; 
 public class Secretary extends Employee{
-    protected Role role;
-    
-    public Secretary(int id, String name, Role role){
+    MedicalOffice office;
+    public Secretary(int id, String name){
         super(id, name);
-        this.role = role;
     }
 }

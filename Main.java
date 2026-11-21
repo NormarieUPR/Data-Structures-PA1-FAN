@@ -2,6 +2,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.time.LocalDateTime;
 import ENUMS.*;
+import Office.MedicalOffice;
 import misc.*;
 import peopleClasses.*;
 
@@ -99,11 +100,39 @@ public class Main{
 
     // --------------------------------Tools--------------------------------
     // read input, call office method, print
-    
-    private static void secRegisterPatient(MedicalOffice office, Scanner scanner) {}
     // read name -> office.registerPatient(name) -> print ID
-    private static void secRegisterEmployee(MedicalOffice office, Scanner scanner) {}
-    // choose employee type, read name (and specialty) -> call office.hire/registeremployee() -> print ID
+    private static void secRegisterPatient(MedicalOffice office, Scanner scanner) {
+        System.out.print("Patient's full name: ");
+        String name = scanner.nextLine().trim();
+
+        int type = readMenu(scanner, "Type of visit", "Regular", "Emergency");
+        Priority priority = (type == 1) ? Priority.NORMAL : Priority.EMERGENCY; 
+        Patient p = office.registerPatient(name, priority);
+        System.out.println("Registered. Patient ID: " + p.getId());
+    }
+    // choose employee type, read name (and specialty) -> call office.registeremployee() -> print ID
+    private static void secRegisterEmployee(MedicalOffice office, Scanner scanner) {
+        System.out.println("Employee's full name: ");
+        String name = scanner.nextLine().trim();
+        int roleChoice = readMenu(scanner, "Role", "Secretary", "Nurse", "Doctor");
+        Roles role = switch (roleChoice) {
+        case 1 -> Roles.SECRETARY;
+        case 2 -> Roles.NURSE;
+        default -> Roles.DOCTOR;
+        };
+        Specialty specialty = null;
+        if(role == Roles.DOCTOR){
+            int specChoice = readMenu(scanner, "Specialty", "General", "Pediatric", "Neuro-opthalmologist", "Retinologist");
+            specialty = switch(specChoice) {
+                case 1 -> Specialty.OFTALMOLOGO_GENERAL;
+                case 2 -> Specialty.OFTALMOLOGO_PEDIATRICO;
+                case 3 -> Specialty.NEURO_OFTALMOLOGO;
+                default -> Specialty.RETINOLOGO;
+            };
+        }
+            Employee e = office.registerEmployee(name, role, specialty);
+            System.out.println("Registered " + role + ". Employee ID:" + e.getId());
+    }
     private static void secSchedule(MedicalOffice office, Scanner scanner) {}
     // ask for patient -> choose specialty -> list doctors -> pick one
     // -> read date -> show that doctors day -> read time -> office.scheduleApp
@@ -139,11 +168,43 @@ public class Main{
             System.out.println((i + 1) + ". " + waiting.get(i));
         }
     }
+   // office.getAvailable() -> print each
+    private static void nurAvailableDoctors(MedicalOffice office, Scanner scanner) {
+        List<Doctor> available = office.showAvailableDoctors();
+        if(available.isEmpty()){
+            System.out.println("There are no doctors available at the moment");
+            return;
+        }
+        System.out.println("Doctor Available at the moment:");
+        for(Doctor d: available){
+            System.out.println("ID: " + d.getId() + " Name: "+ d.getName()+ " Specialty: "+ d.getSpecialty());
+        }
 
-    private static void nurAvailableDoctors(MedicalOffice office, Scanner scanner) {}
-    // office.getAvailable() -> print each
-    private static void nurFindBySpecialty(MedicalOffice office, Scanner scanner) {}
+    }
     // choose specialty -> office.findDoctorsBySpecialty -> print each
+
+    private static void nurFindBySpecialty(MedicalOffice office, Scanner scanner) {
+        int choice = readMenu(scanner, "Specialty", "General", "Pediatric", "Neuro-opthalmologist", "Retinologist");
+        Specialty specialty = switch (choice){
+            case 1 -> Specialty.OFTALMOLOGO_GENERAL;
+            case 2 -> Specialty.OFTALMOLOGO_PEDIATRICO;
+            case 3 -> Specialty.NEURO_OFTALMOLOGO;
+            case 4 -> Specialty.RETINOLOGO;
+            default ->Specialty.OFTALMOLOGO_GENERAL;
+        };
+
+        List<Doctor> doctors = office.findDoctorsBySpecialty(specialty);
+        if(doctors.isEmpty()){
+            System.out.println("No doctors with that specialty");
+            return;
+        }
+        System.out.print("Doctors with that specialty");
+        for(Doctor d: doctors){
+            String status = d.isAvailable() ? "available" : "not available";
+            System.out.println("ID: " + d.getId() + " Name: " + d.getName() + " (" + status + ")");
+
+        }
+    }
     private static void docAvailability(MedicalOffice office, Scanner scanner) {}
     // read doctor ID -> toggle/set
     private static void docAttendNext(MedicalOffice office, Scanner scanner) {}

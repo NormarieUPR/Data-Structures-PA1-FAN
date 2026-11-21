@@ -1,3 +1,4 @@
+package Office;
 import ENUMS.*;
 import java.util.*;
 import peopleClasses.*;
@@ -14,7 +15,7 @@ public class MedicalOffice{
     // per doctor availability
 
     // Avoid duplicate patients with hashset
-    private final Set<Integer> registeredPatientsID = new HashSet<>();
+    //private final Set<Integer> registeredPatientsID = new HashSet<>(); sacar since ya resolvimos el problema 
 
     // Queues
     private final Queue<Patient> waitingQueue = new ArrayDeque<>();
@@ -32,13 +33,43 @@ public class MedicalOffice{
     private int appointmentCounter = 0;
 
     // Employees Operations
+    private int nextEmployeeId = 1; //reserved 1-1000 for employees
+    private int nextEmployeeId(){
+        if (nextEmployeeId > 1000){
+            throw new IllegalStateException("NO staff IDs left");
+        }
+        return nextEmployeeId++;
+    }
     public void addDoctor(Doctor doctor){ }
     public void removeDoctor(int doctorId) {}
-    public void registerEmployee(Employee employee) { }
+    public Employee registerEmployee(String name, Roles role, Specialty specialty) { 
+        int id = nextEmployeeId();
+        if(role == Roles.SECRETARY){
+            Secretary s = new Secretary(id, name);
+            secretaries.put(id, s);
+            return s;
+        }
+        else if(role == Roles.DOCTOR){
+            Doctor d = new Doctor(id, name, specialty, false);
+            doctors.put(id, d);
+            return d;
+        }
+        else if(role == Roles.NURSE){
+            Nurse n = new Nurse(id, name);
+            nurses.put(id, n);
+            return n;
+        }
+        throw new IllegalArgumentException("Unknown role " + role);
+     }
 
     // Patients
-    public boolean registerPatient(Patient patient){
-        return false;
+    private int nextPatientId = 1001; //ID 1001 and up are for patients
+    public Patient registerPatient(String name, Priority priority){
+        int id = nextPatientId++;
+        Patient p = new Patient(id, name, priority, 0);
+        patients.put(id,p);
+        return p;
+
     }
 
     // Secretary checks patients in
@@ -46,8 +77,8 @@ public class MedicalOffice{
         Patient p = patients.get(patientID);
         if (p == null) return false;
         if (waitingIds.contains(patientID)) return false;
-
-        p.setPriority(Priority.NORMAL);
+ 
+        p.setPriority(Priority.NORMAL); //idk if to delete cuz ya en register estoy pidiendo el type of visit lmk q piensas
         p.setArrivalOrder(arrivalCounter++);
         addToWaitingList(p);
         return true;
@@ -85,10 +116,25 @@ public class MedicalOffice{
 
     // Search
     public List<Doctor> findDoctorsBySpecialty(Specialty specialty){
-        return null;
+        List<Doctor> result = new ArrayList<>();
+        for(Doctor d: doctors.values()){
+            if(d.getSpecialty() == specialty){
+                result.add(d);
+            }
+        }
+        return result;
     }
 
-    public List<Doctor> showAvailableDoctors(){return null;}
+    public List<Doctor> showAvailableDoctors(){
+        System.out.print("Doctors Available at the moment:");
+        ArrayList<Doctor> availableDoctors = new ArrayList<Doctor>();
+        for(Doctor doctor : doctors.values()){
+            if(doctor.isAvailable()){
+                availableDoctors.add(doctor);
+            }
+        }
+        return availableDoctors;
+    }
 
     // Citas
     public Appointment scheduleAppointment(int patientId, int doctorId, LocalDateTime time) { 
