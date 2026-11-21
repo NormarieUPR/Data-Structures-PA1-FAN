@@ -33,9 +33,9 @@ public class MedicalOffice{
     private int appointmentCounter = 0;
 
     // Employees Operations
-    private int nextEmployeeId = 1; //reserved 1-200 for employees
+    private int nextEmployeeId = 1; //reserved 1-1000 for employees
     private int nextEmployeeId(){
-        if (nextEmployeeId > 200){
+        if (nextEmployeeId > 1000){
             throw new IllegalStateException("NO staff IDs left");
         }
         return nextEmployeeId++;
@@ -63,7 +63,7 @@ public class MedicalOffice{
      }
 
     // Patients
-    private int nextPatientId = 201; //ID 101 and up are for patients
+    private int nextPatientId = 1001; //ID 1001 and up are for patients
     public Patient registerPatient(String name, Priority priority){
         int id = nextPatientId++;
         Patient p = new Patient(id, name, priority, 0);
