@@ -92,6 +92,26 @@ public class MedicalOffice{
         }
         waitingIds.add(patient.getId());
     }
+
+    // Marks a patient as an emergency and puts them in the emergency line
+    public boolean addEmergency(int patientID) {
+        Patient p = patients.get(patientID);
+        if (p == null) return false;
+
+        if (waitingIds.contains(patientID)) {   // If patient already waiting
+            if (p.getPriority() == Priority.EMERGENCY) return false;
+            waitingQueue.remove(p);
+            waitingIds.remove(patientID);
+        } 
+        else {                                      // If patient Just arrived
+            p.setArrivalOrder(arrivalCounter++); 
+        }
+
+        p.setPriority(Priority.EMERGENCY);
+        addToWaitingList(p);                        // Goes to the emergency line
+        return true;
+    }
+
     public Patient attendNextPatient() { return null;}
     public Patient assignPatientToDoc(int doctorID){
         return null;
