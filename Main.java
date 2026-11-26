@@ -212,10 +212,31 @@ public class Main{
 
         }
     }
-    private static void docAvailability(MedicalOffice office, Scanner scanner) {}
+
     // read doctor ID -> toggle/set
-    private static void docAttendNext(MedicalOffice office, Scanner scanner) {}
-    // read doctor ID -> office.assignNextPatient(doctorID) -> print who (emergency first)
+    private static void docAvailability(MedicalOffice office, Scanner scanner) {
+        int id = readInt(scanner, "Doctor ID: ");
+        Boolean nowAvailable = office.toggleDoctorAvailability(id);
+        if (nowAvailable == null) {
+            System.out.println("No doctor with that ID.");
+        } else if (nowAvailable) {
+            System.out.println("Doctor " + id + " is now AVAILABLE.");
+        } else {
+            System.out.println("Doctor " + id + " is now BUSY.");
+        }
+    }
+
+    // read doctor ID -> office.assignPatientToDoc (doctorID) -> print who (emergency first)
+    private static void docAttendNext(MedicalOffice office, Scanner scanner) {
+        int id = readInt(scanner, "Doctor ID: ");
+        Patient p = office.assignPatientToDoc(id);
+        if (p != null) {
+            System.out.println("Now attending: " + p);
+        } else {
+            System.out.println("Could not assign: doctor not found or busy, or no patients waiting.");
+        }
+    }
+
     private static void docRegisterVisit(MedicalOffice office, Scanner scanner) {}
     // read doctor ID + patient ID -> office.registerVisit()
     private static void patientHistory(MedicalOffice office, Scanner scanner) {}

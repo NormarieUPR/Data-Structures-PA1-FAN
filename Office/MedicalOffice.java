@@ -139,6 +139,14 @@ public class MedicalOffice{
         return p;
     }
 
+    // Switches doctor between available and busy
+    public Boolean toggleDoctorAvailability(int doctorID) {
+        Doctor d = doctors.get(doctorID);
+        if (d == null) return null;
+        d.setAvailable(!d.isAvailable());
+        return d.isAvailable();
+    }
+
     public void registerVisit(int patientID, int doctorId){}
 
     // Wait list in order they'll be called
