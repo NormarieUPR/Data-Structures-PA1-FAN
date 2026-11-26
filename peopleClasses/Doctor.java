@@ -3,6 +3,8 @@ import ENUMS.Specialty;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import misc.*;
@@ -11,6 +13,7 @@ public class Doctor extends Employee {
     protected final Specialty specialty;
     protected boolean available; 
     private final TreeMap<LocalDateTime, Appointment> schedule = new TreeMap<>();
+    private final Set<Integer> patientIds = new HashSet<>();
     
     public Doctor(int id, String name, Specialty specialty, boolean available){
         super(id,name);
@@ -39,6 +42,12 @@ public class Doctor extends Employee {
     public List<Appointment> getAppointmentsOn(LocalDate day) {
         return new ArrayList<>(schedule.subMap(day.atStartOfDay(),
                     day.plusDays(1).atStartOfDay()).values());
+    }
+    public boolean addPatient(int patientId) {
+        return patientIds.add(patientId);
+    }
+    public Set<Integer> getPatientIds() {
+        return patientIds;
     }
 
 }

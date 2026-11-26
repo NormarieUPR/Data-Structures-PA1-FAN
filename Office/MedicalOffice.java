@@ -112,9 +112,31 @@ public class MedicalOffice{
         return true;
     }
 
-    public Patient attendNextPatient() { return null;}
+    // Takes the next patient out of line in priority order
+    public Patient attendNextPatient() { 
+        Patient next;
+        if (!emergencyQueue.isEmpty()) {
+            next = emergencyQueue.poll();
+        } else {
+            next = waitingQueue.poll();
+        }
+        if (next != null) {
+            waitingIds.remove(next.getId());
+        }
+        return next;
+    }
+
+    // An available doctor gets assigned the next patient in line
     public Patient assignPatientToDoc(int doctorID){
-        return null;
+        Doctor d = doctors.get(doctorID);
+        if (d == null || !d.isAvailable()) return null; // Doctor doesn't exist or is busy
+
+        Patient p = attendNextPatient();
+        if (p == null) return null;
+
+        d.addPatient(p.getId()); // Set (No duplicates)
+        d.setAvailable(false); // Doctor becomes busy
+        return p;
     }
 
     public void registerVisit(int patientID, int doctorId){}
