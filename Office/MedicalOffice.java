@@ -78,7 +78,6 @@ public class MedicalOffice{
         if (p == null) return false;
         if (waitingIds.contains(patientID)) return false;
  
-        p.setPriority(Priority.NORMAL); //idk if to delete cuz ya en register estoy pidiendo el type of visit lmk q piensas
         p.setArrivalOrder(arrivalCounter++);
         addToWaitingList(p);
         return true;
@@ -93,9 +92,59 @@ public class MedicalOffice{
         }
         waitingIds.add(patient.getId());
     }
-    public Patient attendNextPatient() { return null;}
+
+    // Marks a patient as an emergency and puts them in the emergency line
+    public boolean addEmergency(int patientID) {
+        Patient p = patients.get(patientID);
+        if (p == null) return false;
+
+        if (waitingIds.contains(patientID)) {   // If patient already waiting
+            if (p.getPriority() == Priority.EMERGENCY) return false;
+            waitingQueue.remove(p);
+            waitingIds.remove(patientID);
+        } 
+        else {                                      // If patient Just arrived
+            p.setArrivalOrder(arrivalCounter++); 
+        }
+
+        p.setPriority(Priority.EMERGENCY);
+        addToWaitingList(p);                        // Goes to the emergency line
+        return true;
+    }
+
+    // Takes the next patient out of line in priority order
+    public Patient attendNextPatient() { 
+        Patient next;
+        if (!emergencyQueue.isEmpty()) {
+            next = emergencyQueue.poll();
+        } else {
+            next = waitingQueue.poll();
+        }
+        if (next != null) {
+            waitingIds.remove(next.getId());
+        }
+        return next;
+    }
+
+    // An available doctor gets assigned the next patient in line
     public Patient assignPatientToDoc(int doctorID){
-        return null;
+        Doctor d = doctors.get(doctorID);
+        if (d == null || !d.isAvailable()) return null; // Doctor doesn't exist or is busy
+
+        Patient p = attendNextPatient();
+        if (p == null) return null;
+
+        d.addPatient(p.getId()); // Set (No duplicates)
+        d.setAvailable(false); // Doctor becomes busy
+        return p;
+    }
+
+    // Switches doctor between available and busy
+    public Boolean toggleDoctorAvailability(int doctorID) {
+        Doctor d = doctors.get(doctorID);
+        if (d == null) return null;
+        d.setAvailable(!d.isAvailable());
+        return d.isAvailable();
     }
 
     public void registerVisit(int patientID, int doctorId){}
