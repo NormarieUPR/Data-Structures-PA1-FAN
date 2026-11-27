@@ -1,6 +1,8 @@
 import java.util.List;
 import java.util.Scanner;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import ENUMS.*;
 import Office.MedicalOffice;
 import misc.*;
@@ -91,14 +93,16 @@ public class Main{
                     "Set my availability",
                     "Attend next patient",
                     "Register visit",
+                    "Recent visits",
                     "Patient history",
                     "Back");
             switch (opt) {
                 case 1 -> docAvailability(office, scanner);
                 case 2 -> docAttendNext(office, scanner);
                 case 3 -> docRegisterVisit(office, scanner);
-                case 4 -> patientHistory(office, scanner);
-                case 5 -> running = false;
+                case 4 -> docRecentVisits(office, scanner);
+                case 5 -> patientHistory(office, scanner);
+                case 6 -> running = false;
                 default -> System.out.println("Invalid. Try again.");
             }
         }
@@ -139,6 +143,60 @@ public class Main{
             Employee e = office.registerEmployee(name, role, specialty);
             System.out.println("Registered " + role + ". Employee ID:" + e.getId());
     }
+    // ask for patient -> choose specialty -> pick doctor -> date -> show taken times -> time -> schedule
+    private static void secSchedule(MedicalOffice office, Scanner scanner) {
+        Patient patient = askForPatient(office, scanner);
+
+        Specialty specialty = chooseSpecialty(scanner);
+        List<Doctor> doctors = office.findDoctorsBySpecialty(specialty);
+        if (doctors.isEmpty()) {
+            System.out.println("No doctors with that specialty.");
+            return;
+        }
+        for (Doctor d : doctors) {
+            System.out.println("ID: " + d.getId() + " Name: " + d.getName());
+        }
+
+        // keep asking until the ID is one of the doctors listed
+        Doctor doctor = null;
+        while (doctor == null) {
+            int id = readInt(scanner, "Doctor ID: ");
+            for (Doctor d : doctors) {
+                if (d.getId() == id) doctor = d;
+            }
+            if (doctor == null) System.out.println("Choose one of the doctors listed.");
+        }
+
+        LocalDate day = readDate(scanner);
+        System.out.println("Taken that day:");
+        for (Appointment a : office.getDoctorAppointments(doctor.getId(), day)) {
+            System.out.println("  " + a.getTime().toLocalTime());
+        }
+
+        // if the time is rejected, show why and let them try another
+        while (true) {
+            LocalTime time = readTime(scanner);
+            try {
+                Appointment a = office.scheduleAppointment(patient.getId(), doctor.getId(), day.atTime(time));
+                System.out.println("Scheduled. Appointment ID: " + a.getAppointmentId());
+                return;
+            } catch (IllegalArgumentException e) {
+                System.out.println("Could not schedule: " + e.getMessage());
+                if (readMenu(scanner, "Try another time?", "Yes", "No") == 2) return;
+            }
+        }
+    }
+
+    // read appointment ID -> office.cancelAppointment -> print result
+    private static void secCancel(MedicalOffice office, Scanner scanner) {
+        int id = readInt(scanner, "Appointment ID: ");
+        try {
+            office.cancelAppointment(id);
+            System.out.println("Appointment " + id + " canceled.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Could not cancel: " + e.getMessage());
+        }
+    }
     // Show all available doctors that are registered 
     private static void secShowAllDoctors(MedicalOffice office, Scanner scanner) {
         office.showAllDoctors();
@@ -154,12 +212,6 @@ public class Main{
             return; 
         }
     }
-    private static void secSchedule(MedicalOffice office, Scanner scanner) {}
-    // ask for patient -> choose specialty -> list doctors -> pick one
-    // -> read date -> show that doctors day -> read time -> office.scheduleApp
-    // -> print App ID (or fail, pick another time etc)
-    private static void secCancel(MedicalOffice office, Scanner scanner) {}
-    // read app ID -> office.cancelApp -> print result
 
     // ask for patient -> office.checkIn(id) -> print place in line
     private static void secCheckIn(MedicalOffice office, Scanner scanner) {
@@ -191,14 +243,25 @@ public class Main{
             System.out.println("ID: " + employee.getId() + " Name: " + employee.getName() + " Role: " + role);
     }
 
-    private static void secToday(MedicalOffice office, Scanner scanner) {}
-    // office.getToday() -> print
     private static void secEmergency(MedicalOffice office, Scanner scanner) {
         int id = readInt(scanner, "Patient ID: ");
         if (office.addEmergency(id)) {
             System.out.println("Patient " + id + " moved to the emergency line.");
         } else {
             System.out.println("Could not add: patient not registered or already an emergency.");
+        }
+    }
+
+    // office.showTodayAppointments() -> print each
+    private static void secToday(MedicalOffice office, Scanner scanner) {
+        List<Appointment> today = office.showTodayAppointments();
+        if (today.isEmpty()) {
+            System.out.println("No appointments today.");
+            return;
+        }
+        System.out.println("Today's appointments:");
+        for (Appointment a : today) {
+            System.out.println(a);
         }
     }
     //NURSE OPERATIONS
@@ -279,12 +342,109 @@ public class Main{
         }
     }
 
-    private static void docRegisterVisit(MedicalOffice office, Scanner scanner) {}
-    // read doctor ID + patient ID -> office.registerVisit()
-    private static void patientHistory(MedicalOffice office, Scanner scanner) {}
-    // read patient ID -> office.getHistory(id) -> print each
+    // read doctor ID + patient ID -> office.registerVisit -> print the visit
+    private static void docRegisterVisit(MedicalOffice office, Scanner scanner) {
+        int doctorId = readInt(scanner, "Doctor ID: ");
+        int patientId = readInt(scanner, "Patient ID: ");
+        try {
+            Appointment visit = office.registerVisit(patientId, doctorId);
+            System.out.println("Visit registered: " + visit);
+            System.out.println("Doctor " + doctorId + " is available again.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Could not register visit: " + e.getMessage());
+        }
+    }
+
+    // office.showRecentVisits() -> print, most recent first
+    private static void docRecentVisits(MedicalOffice office, Scanner scanner) {
+        List<Appointment> recent = office.showRecentVisits();
+        if (recent.isEmpty()) {
+            System.out.println("No visits yet.");
+            return;
+        }
+        for (Appointment a : recent) {
+            System.out.println(a);
+        }
+    }
+    // read patient ID -> office.showPatientHistory(id) -> print each
+    private static void patientHistory(MedicalOffice office, Scanner scanner) {
+        int id = readInt(scanner, "Patient ID: ");
+        try {
+            List<Appointment> history = office.showPatientHistory(id);
+            if (history.isEmpty()) {
+                System.out.println("No appointments yet.");
+                return;
+            }
+            for (Appointment a : history) {
+                System.out.println(a);
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
     
     // --------------------------------Misc--------------------------------
+
+    // type an existing patient's ID, or 0 to register a new one (real IDs start at 1001)
+    private static Patient askForPatient(MedicalOffice office, Scanner scanner) {
+        while (true) {
+            int id = readInt(scanner, "Patient ID (0 = new patient): ");
+            if (id == 0) {
+                String name = readLine(scanner, "Patient's full name: ");
+                Patient p = office.registerPatient(name, Priority.NORMAL);
+                System.out.println("Registered. Patient ID: " + p.getId());
+                return p;
+            }
+            Patient p = office.findPatient(id);
+            if (p != null) return p;
+            System.out.println("No patient with ID " + id + ".");
+        }
+    }
+
+    // print every specialty with a number, return the one chosen
+    private static Specialty chooseSpecialty(Scanner scanner) {
+        Specialty[] all = Specialty.values();
+        for (int i = 0; i < all.length; i++) {
+            System.out.println("(" + (i + 1) + ") " + all[i]);
+        }
+        while (true) {
+            int choice = readInt(scanner, "Specialty: ");
+            if (choice >= 1 && choice <= all.length) return all[choice - 1];
+            System.out.println("Choose a number from 1 to " + all.length + ".");
+        }
+    }
+
+    // read a line that isn't empty
+    private static String readLine(Scanner scanner, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String line = scanner.nextLine().trim();
+            if (!line.isEmpty()) return line;
+            System.out.println("This can't be empty.");
+        }
+    }
+
+    // read a date like 2026-12-01 (yyyy-MM-dd)
+    private static LocalDate readDate(Scanner scanner) {
+        while (true) {
+            try {
+                return LocalDate.parse(readLine(scanner, "Date (yyyy-MM-dd): "));
+            } catch (DateTimeParseException e) {
+                System.out.println("Use the format yyyy-MM-dd, for example 2026-12-01.");
+            }
+        }
+    }
+
+    // read a time like 09:30 (HH:mm)
+    private static LocalTime readTime(Scanner scanner) {
+        while (true) {
+            try {
+                return LocalTime.parse(readLine(scanner, "Time (HH:mm, on the hour or half hour): "));
+            } catch (DateTimeParseException e) {
+                System.out.println("Use the format HH:mm, for example 09:30.");
+            }
+        }
+    }
 
     // print numbered menu and keep asking until int is valid
     private static int readMenu(Scanner scanner, String title, String... options) {

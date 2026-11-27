@@ -3,6 +3,7 @@ import ENUMS.*;
 import java.util.*;
 import peopleClasses.*;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import misc.*;
 
 public class MedicalOffice{
@@ -31,6 +32,9 @@ public class MedicalOffice{
     // Counters
     private long arrivalCounter = 0;
     private int appointmentCounter = 0;
+
+    // Completed visits, most recent on top (used as a stack)
+    private final Deque<Appointment> recentVisits = new ArrayDeque<>();
 
     // Employees Operations
     private int nextEmployeeId = 1; //reserved 1-1000 for employees
@@ -161,7 +165,41 @@ public class MedicalOffice{
         return d.isAvailable();
     }
 
-    public void registerVisit(int patientID, int doctorId){}
+    // Doctor finished seeing a patient: complete today's appointment, or record a walk-in visit
+    public Appointment registerVisit(int patientId, int doctorId) {
+        Patient p = patients.get(patientId);
+        if (p == null) throw new IllegalArgumentException("Patient not found");
+        Doctor doc = doctors.get(doctorId);
+        if (doc == null) throw new IllegalArgumentException("Doctor not found");
+
+        // 1. Did the patient have an appointment with this doctor today?
+        Appointment visit = null;
+        for (Appointment a : doc.getAppointmentsOn(LocalDate.now())) {
+            if (a.getPatientId() == patientId && a.getStatus() == Appointment.Status.SCHEDULED) {
+                visit = a;
+            }
+        }
+
+        // 2. If not, they came from the waiting line: create a record for this visit
+        if (visit == null) {
+            int id = ++appointmentCounter;
+            LocalDateTime now = LocalDateTime.now().withSecond(0).withNano(0); // drop seconds so it prints as HH:mm
+            visit = new Appointment(id, patientId, doctorId, now);
+            appointments.put(id, visit);
+            p.addToHistory(visit);
+        }
+
+        visit.setStatus(Appointment.Status.COMPLETED);
+        doc.addPatient(patientId);   // Set, so no duplicate patients
+        doc.setAvailable(true);      // the doctor can take the next patient
+        recentVisits.push(visit);    // newest on top
+        return visit;
+    }
+
+    // Completed visits, most recent first
+    public List<Appointment> showRecentVisits() {
+        return new ArrayList<>(recentVisits);
+    }
 
     // Wait list in order they'll be called
     public List<Patient> showWaitingPatients(){
@@ -212,7 +250,7 @@ public class MedicalOffice{
     public Appointment scheduleAppointment(int patientId, int doctorId, LocalDateTime time) { 
         // validate appointment
         if (time == null || time.isBefore(LocalDateTime.now().plusMinutes(1))) {
-            throw new IllegalArgumentException("Invalid time");
+            throw new IllegalArgumentException("Time must be in the future");
         }
 
         if (time.getMinute() % 30 != 0) {
@@ -245,10 +283,37 @@ public class MedicalOffice{
         Appointment app = appointments.get(appointmentId);
         if (app == null) throw new IllegalArgumentException("Appointment not found");
         if (app.getStatus() != Appointment.Status.SCHEDULED) throw new IllegalArgumentException("Only scheduled appointments can be canceled");
-        doctors.get(app.getDoctorId()).removeFromSchedule(app);
+        Doctor doc = doctors.get(app.getDoctorId());
+        if (doc != null) doc.removeFromSchedule(app); // the doctor may have been removed
         app.setStatus(Appointment.Status.CANCELED);
-    }      
-    public List<Appointment> showPatientHistory(int patientId) { return null; } 
-    public List<Appointment> showTodayAppointments() { return null; }       
+    }
+
+    // One doctor's appointments on a day (to show taken times when scheduling)
+    public List<Appointment> getDoctorAppointments(int doctorId, LocalDate day) {
+        Doctor doc = doctors.get(doctorId);
+        if (doc == null) throw new IllegalArgumentException("Doctor not found");
+        return doc.getAppointmentsOn(day);
+    }
+
+    // Returns the patient, or null if there is no patient with that ID
+    public Patient findPatient(int patientId) {
+        return patients.get(patientId);
+    }
+    // All of a patient's appointments and visits, oldest first
+    public List<Appointment> showPatientHistory(int patientId) {
+        Patient p = patients.get(patientId);
+        if (p == null) throw new IllegalArgumentException("Patient not found");
+        return new ArrayList<>(p.getHistory());
+    }
+
+    // Every doctor's appointments for today, sorted by time
+    public List<Appointment> showTodayAppointments() {
+        List<Appointment> today = new ArrayList<>();
+        for (Doctor d : doctors.values()) {
+            today.addAll(d.getAppointmentsOn(LocalDate.now()));
+        }
+        today.sort(Comparator.comparing(Appointment::getTime));
+        return today;
+    }
 
 }
