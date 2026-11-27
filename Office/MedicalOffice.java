@@ -41,7 +41,13 @@ public class MedicalOffice{
         return nextEmployeeId++;
     }
     public void addDoctor(Doctor doctor){ }
-    public void removeDoctor(int doctorId) {}
+    public boolean removeDoctor(int doctorId) {
+        Doctor d = doctors.remove(doctorId);
+        if( d == null){
+            return false;
+        }
+        return true;
+    }
     public Employee registerEmployee(String name, Roles role, Specialty specialty) { 
         int id = nextEmployeeId();
         if(role == Roles.SECRETARY){
@@ -61,6 +67,14 @@ public class MedicalOffice{
         }
         throw new IllegalArgumentException("Unknown role " + role);
      }
+
+    public Employee getEmployee(int id){
+        Employee e = doctors.get(id);
+        if (e != null) return e;
+        e = nurses.get(id);
+        if (e != null) return e;
+        return secretaries.get(id);
+    }
 
     // Patients
     private int nextPatientId = 1001; //ID 1001 and up are for patients
@@ -184,6 +198,15 @@ public class MedicalOffice{
         }
         return availableDoctors;
     }
+    public void showAllDoctors(){
+        System.out.println("Doctors on Heisenbergs Oftalmology");
+        System.out.println("-".repeat(45));
+        for(Doctor doctor : doctors.values()){
+            System.out.println("ID: " + doctor.getId() + " Name: " + doctor.getName() + " Specialty: " + doctor.getSpecialty());
+        }
+        System.out.println("-".repeat(45));
+    }
+
 
     // Citas
     public Appointment scheduleAppointment(int patientId, int doctorId, LocalDateTime time) { 
