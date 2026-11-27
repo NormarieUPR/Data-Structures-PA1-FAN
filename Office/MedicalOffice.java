@@ -3,6 +3,7 @@ import ENUMS.*;
 import java.util.*;
 import peopleClasses.*;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import misc.*;
 
 public class MedicalOffice{
@@ -225,7 +226,21 @@ public class MedicalOffice{
         doctors.get(app.getDoctorId()).removeFromSchedule(app);
         app.setStatus(Appointment.Status.CANCELED);
     }      
-    public List<Appointment> showPatientHistory(int patientId) { return null; } 
-    public List<Appointment> showTodayAppointments() { return null; }       
+    // All of a patient's appointments and visits, oldest first
+    public List<Appointment> showPatientHistory(int patientId) {
+        Patient p = patients.get(patientId);
+        if (p == null) throw new IllegalArgumentException("Patient not found");
+        return new ArrayList<>(p.getHistory());
+    }
+
+    // Every doctor's appointments for today, sorted by time
+    public List<Appointment> showTodayAppointments() {
+        List<Appointment> today = new ArrayList<>();
+        for (Doctor d : doctors.values()) {
+            today.addAll(d.getAppointmentsOn(LocalDate.now()));
+        }
+        today.sort(Comparator.comparing(Appointment::getTime));
+        return today;
+    }
 
 }

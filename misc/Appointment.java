@@ -42,4 +42,10 @@ public class Appointment{
     public void setStatus(Status s) {
         this.status = s;
     }
+
+    @Override
+    public String toString() {
+        return "#" + id + "  " + time.toLocalDate() + " " + time.toLocalTime()
+                + "  patient " + patientId + " -> doctor " + doctorId + "  " + status;
+    }
 }

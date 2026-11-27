@@ -160,8 +160,18 @@ public class Main{
         }
     }
 
-    private static void secToday(MedicalOffice office, Scanner scanner) {}
-    // office.getToday() -> print
+    // office.showTodayAppointments() -> print each
+    private static void secToday(MedicalOffice office, Scanner scanner) {
+        List<Appointment> today = office.showTodayAppointments();
+        if (today.isEmpty()) {
+            System.out.println("No appointments today.");
+            return;
+        }
+        System.out.println("Today's appointments:");
+        for (Appointment a : today) {
+            System.out.println(a);
+        }
+    }
 
     // office.getWaiting() -> print
     private static void nurWaiting(MedicalOffice office, Scanner scanner) {
@@ -239,8 +249,22 @@ public class Main{
 
     private static void docRegisterVisit(MedicalOffice office, Scanner scanner) {}
     // read doctor ID + patient ID -> office.registerVisit()
-    private static void patientHistory(MedicalOffice office, Scanner scanner) {}
-    // read patient ID -> office.getHistory(id) -> print each
+    // read patient ID -> office.showPatientHistory(id) -> print each
+    private static void patientHistory(MedicalOffice office, Scanner scanner) {
+        int id = readInt(scanner, "Patient ID: ");
+        try {
+            List<Appointment> history = office.showPatientHistory(id);
+            if (history.isEmpty()) {
+                System.out.println("No appointments yet.");
+                return;
+            }
+            for (Appointment a : history) {
+                System.out.println(a);
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
     
     // --------------------------------Misc--------------------------------
 
