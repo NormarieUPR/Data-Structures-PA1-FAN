@@ -190,7 +190,7 @@ public class MedicalOffice{
     public Appointment scheduleAppointment(int patientId, int doctorId, LocalDateTime time) { 
         // validate appointment
         if (time == null || time.isBefore(LocalDateTime.now().plusMinutes(1))) {
-            throw new IllegalArgumentException("Invalid time");
+            throw new IllegalArgumentException("Time must be in the future");
         }
 
         if (time.getMinute() % 30 != 0) {
@@ -223,9 +223,22 @@ public class MedicalOffice{
         Appointment app = appointments.get(appointmentId);
         if (app == null) throw new IllegalArgumentException("Appointment not found");
         if (app.getStatus() != Appointment.Status.SCHEDULED) throw new IllegalArgumentException("Only scheduled appointments can be canceled");
-        doctors.get(app.getDoctorId()).removeFromSchedule(app);
+        Doctor doc = doctors.get(app.getDoctorId());
+        if (doc != null) doc.removeFromSchedule(app); // the doctor may have been removed
         app.setStatus(Appointment.Status.CANCELED);
-    }      
+    }
+
+    // One doctor's appointments on a day (to show taken times when scheduling)
+    public List<Appointment> getDoctorAppointments(int doctorId, LocalDate day) {
+        Doctor doc = doctors.get(doctorId);
+        if (doc == null) throw new IllegalArgumentException("Doctor not found");
+        return doc.getAppointmentsOn(day);
+    }
+
+    // Returns the patient, or null if there is no patient with that ID
+    public Patient findPatient(int patientId) {
+        return patients.get(patientId);
+    }
     // All of a patient's appointments and visits, oldest first
     public List<Appointment> showPatientHistory(int patientId) {
         Patient p = patients.get(patientId);
