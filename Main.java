@@ -39,23 +39,29 @@ public class Main{
             int opt = readMenu(scanner, "====Secretary====", 
                     "Register new patient",
                     "Register new employee",
+                    "Show All Doctors",
+                    "Remove Doctor",
                     "Schedule appointment",
                     "Cancel appointment",
                     "Check in patient",
                     "Emergency patient",
                     "Patient history",
                     "Today's appointments",
+                    "Search Staff Member",
                     "Back");
             switch (opt) {
                 case 1 -> secRegisterPatient(office, scanner);
                 case 2 -> secRegisterEmployee(office, scanner);
-                case 3 -> secSchedule(office, scanner);
-                case 4 -> secCancel(office, scanner);
-                case 5 -> secCheckIn(office, scanner);
-                case 6 -> secEmergency(office, scanner);
-                case 7 -> patientHistory(office, scanner);
-                case 8 -> secToday(office, scanner);
-                case 9 -> running = false;
+                case 3 -> secShowAllDoctors(office, scanner);
+                case 4 -> secRemoveDoctor(office, scanner);
+                case 5 -> secSchedule(office, scanner);
+                case 6 -> secCancel(office, scanner);
+                case 7 -> secCheckIn(office, scanner);
+                case 8 -> secEmergency(office, scanner);
+                case 9 -> patientHistory(office, scanner);
+                case 10 -> secToday(office, scanner);
+                case 11 -> secGetEmployee(office,scanner);
+                case 12 -> running = false;
                 default -> System.out.println("Invalid. Try again.");
             }
         }
@@ -128,10 +134,10 @@ public class Main{
         if(role == Roles.DOCTOR){
             int specChoice = readMenu(scanner, "Specialty", "General", "Pediatric", "Neuro-opthalmologist", "Retinologist");
             specialty = switch(specChoice) {
-                case 1 -> Specialty.OFTALMOLOGO_GENERAL;
-                case 2 -> Specialty.OFTALMOLOGO_PEDIATRICO;
-                case 3 -> Specialty.NEURO_OFTALMOLOGO;
-                default -> Specialty.RETINOLOGO;
+                case 1 -> Specialty.GENERAL_OPHTHALMOLOGIST;
+                case 2 -> Specialty.PEDIATRIC_OPHTHALMOLOGIST;
+                case 3 -> Specialty.NEURO_OPHTHALMOLOGIST;
+                default -> Specialty.RETINOLOGIST;
             };
         }
             Employee e = office.registerEmployee(name, role, specialty);
@@ -191,6 +197,21 @@ public class Main{
             System.out.println("Could not cancel: " + e.getMessage());
         }
     }
+    // Show all available doctors that are registered 
+    private static void secShowAllDoctors(MedicalOffice office, Scanner scanner) {
+        office.showAllDoctors();
+    }
+    // ask for id -> call office.removeDoctor() -> print confirmation
+    private static void secRemoveDoctor(MedicalOffice office, Scanner scanner) {
+        int id = readInt(scanner, "Insert the ID of the doctor you wish to remove: ");
+        if(office.removeDoctor(id) == true){
+            System.out.println("Succesfully removed doctor with ID:" + id);
+        }
+        else{
+            System.out.println("Invalid ID try again.");
+            return; 
+        }
+    }
 
     // ask for patient -> office.checkIn(id) -> print place in line
     private static void secCheckIn(MedicalOffice office, Scanner scanner) {
@@ -203,6 +224,25 @@ public class Main{
         }
     }
     // ask for patient -> office.addEmergency(id)
+    // Ask for id -> call office.getEmployee() -> show employee
+    private static void secGetEmployee(MedicalOffice office, Scanner scanner) {
+        int id = readInt(scanner, "Employee ID: ");
+        Employee employee = office.getEmployee(id);
+        if (employee == null){
+            System.out.println("There is no employee with ID: "+ id + ". Try again");
+            return;
+        }
+        String role;
+        if (employee instanceof Doctor) {
+        role = "Doctor";
+        } else if (employee instanceof Nurse) {
+        role = "Nurse";
+        } else {
+        role = "Secretary";
+        }
+            System.out.println("ID: " + employee.getId() + " Name: " + employee.getName() + " Role: " + role);
+    }
+
     private static void secEmergency(MedicalOffice office, Scanner scanner) {
         int id = readInt(scanner, "Patient ID: ");
         if (office.addEmergency(id)) {
@@ -224,6 +264,7 @@ public class Main{
             System.out.println(a);
         }
     }
+    //NURSE OPERATIONS
 
     // office.getWaiting() -> print
     private static void nurWaiting(MedicalOffice office, Scanner scanner) {
@@ -237,6 +278,8 @@ public class Main{
             System.out.println((i + 1) + ". " + waiting.get(i));
         }
     }
+
+
    // office.getAvailable() -> print each
     private static void nurAvailableDoctors(MedicalOffice office, Scanner scanner) {
         List<Doctor> available = office.showAvailableDoctors();
@@ -255,11 +298,11 @@ public class Main{
     private static void nurFindBySpecialty(MedicalOffice office, Scanner scanner) {
         int choice = readMenu(scanner, "Specialty", "General", "Pediatric", "Neuro-opthalmologist", "Retinologist");
         Specialty specialty = switch (choice){
-            case 1 -> Specialty.OFTALMOLOGO_GENERAL;
-            case 2 -> Specialty.OFTALMOLOGO_PEDIATRICO;
-            case 3 -> Specialty.NEURO_OFTALMOLOGO;
-            case 4 -> Specialty.RETINOLOGO;
-            default ->Specialty.OFTALMOLOGO_GENERAL;
+            case 1 -> Specialty.GENERAL_OPHTHALMOLOGIST;
+            case 2 -> Specialty.PEDIATRIC_OPHTHALMOLOGIST;
+            case 3 -> Specialty.NEURO_OPHTHALMOLOGIST;
+            case 4 -> Specialty.RETINOLOGIST;
+            default ->Specialty.GENERAL_OPHTHALMOLOGIST;
         };
 
         List<Doctor> doctors = office.findDoctorsBySpecialty(specialty);
