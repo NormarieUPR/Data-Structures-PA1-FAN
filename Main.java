@@ -87,14 +87,16 @@ public class Main{
                     "Set my availability",
                     "Attend next patient",
                     "Register visit",
+                    "Recent visits",
                     "Patient history",
                     "Back");
             switch (opt) {
                 case 1 -> docAvailability(office, scanner);
                 case 2 -> docAttendNext(office, scanner);
                 case 3 -> docRegisterVisit(office, scanner);
-                case 4 -> patientHistory(office, scanner);
-                case 5 -> running = false;
+                case 4 -> docRecentVisits(office, scanner);
+                case 5 -> patientHistory(office, scanner);
+                case 6 -> running = false;
                 default -> System.out.println("Invalid. Try again.");
             }
         }
@@ -297,8 +299,30 @@ public class Main{
         }
     }
 
-    private static void docRegisterVisit(MedicalOffice office, Scanner scanner) {}
-    // read doctor ID + patient ID -> office.registerVisit()
+    // read doctor ID + patient ID -> office.registerVisit -> print the visit
+    private static void docRegisterVisit(MedicalOffice office, Scanner scanner) {
+        int doctorId = readInt(scanner, "Doctor ID: ");
+        int patientId = readInt(scanner, "Patient ID: ");
+        try {
+            Appointment visit = office.registerVisit(patientId, doctorId);
+            System.out.println("Visit registered: " + visit);
+            System.out.println("Doctor " + doctorId + " is available again.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Could not register visit: " + e.getMessage());
+        }
+    }
+
+    // office.showRecentVisits() -> print, most recent first
+    private static void docRecentVisits(MedicalOffice office, Scanner scanner) {
+        List<Appointment> recent = office.showRecentVisits();
+        if (recent.isEmpty()) {
+            System.out.println("No visits yet.");
+            return;
+        }
+        for (Appointment a : recent) {
+            System.out.println(a);
+        }
+    }
     // read patient ID -> office.showPatientHistory(id) -> print each
     private static void patientHistory(MedicalOffice office, Scanner scanner) {
         int id = readInt(scanner, "Patient ID: ");

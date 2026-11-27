@@ -33,6 +33,9 @@ public class MedicalOffice{
     private long arrivalCounter = 0;
     private int appointmentCounter = 0;
 
+    // Completed visits, most recent on top (used as a stack)
+    private final Deque<Appointment> recentVisits = new ArrayDeque<>();
+
     // Employees Operations
     private int nextEmployeeId = 1; //reserved 1-1000 for employees
     private int nextEmployeeId(){
@@ -148,7 +151,41 @@ public class MedicalOffice{
         return d.isAvailable();
     }
 
-    public void registerVisit(int patientID, int doctorId){}
+    // Doctor finished seeing a patient: complete today's appointment, or record a walk-in visit
+    public Appointment registerVisit(int patientId, int doctorId) {
+        Patient p = patients.get(patientId);
+        if (p == null) throw new IllegalArgumentException("Patient not found");
+        Doctor doc = doctors.get(doctorId);
+        if (doc == null) throw new IllegalArgumentException("Doctor not found");
+
+        // 1. Did the patient have an appointment with this doctor today?
+        Appointment visit = null;
+        for (Appointment a : doc.getAppointmentsOn(LocalDate.now())) {
+            if (a.getPatientId() == patientId && a.getStatus() == Appointment.Status.SCHEDULED) {
+                visit = a;
+            }
+        }
+
+        // 2. If not, they came from the waiting line: create a record for this visit
+        if (visit == null) {
+            int id = ++appointmentCounter;
+            LocalDateTime now = LocalDateTime.now().withSecond(0).withNano(0); // drop seconds so it prints as HH:mm
+            visit = new Appointment(id, patientId, doctorId, now);
+            appointments.put(id, visit);
+            p.addToHistory(visit);
+        }
+
+        visit.setStatus(Appointment.Status.COMPLETED);
+        doc.addPatient(patientId);   // Set, so no duplicate patients
+        doc.setAvailable(true);      // the doctor can take the next patient
+        recentVisits.push(visit);    // newest on top
+        return visit;
+    }
+
+    // Completed visits, most recent first
+    public List<Appointment> showRecentVisits() {
+        return new ArrayList<>(recentVisits);
+    }
 
     // Wait list in order they'll be called
     public List<Patient> showWaitingPatients(){
