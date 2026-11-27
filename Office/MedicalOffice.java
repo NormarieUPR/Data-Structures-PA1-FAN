@@ -68,6 +68,14 @@ public class MedicalOffice{
         throw new IllegalArgumentException("Unknown role " + role);
      }
 
+    public Employee getEmployee(int id){
+        Employee e = doctors.get(id);
+        if (e != null) return e;
+        e = nurses.get(id);
+        if (e != null) return e;
+        return secretaries.get(id);
+    }
+
     // Patients
     private int nextPatientId = 1001; //ID 1001 and up are for patients
     public Patient registerPatient(String name, Priority priority){

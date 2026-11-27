@@ -45,6 +45,7 @@ public class Main{
                     "Emergency patient",
                     "Patient history",
                     "Today's appointments",
+                    "Search Staff Member",
                     "Back");
             switch (opt) {
                 case 1 -> secRegisterPatient(office, scanner);
@@ -57,7 +58,8 @@ public class Main{
                 case 8 -> secEmergency(office, scanner);
                 case 9 -> patientHistory(office, scanner);
                 case 10 -> secToday(office, scanner);
-                case 11 -> running = false;
+                case 11 -> secGetEmployee(office,scanner);
+                case 12 -> running = false;
                 default -> System.out.println("Invalid. Try again.");
             }
         }
@@ -170,6 +172,27 @@ public class Main{
         }
     }
     // ask for patient -> office.addEmergency(id)
+    // Ask for id -> call office.getEmployee() -> show employee
+    private static void secGetEmployee(MedicalOffice office, Scanner scanner) {
+        int id = readInt(scanner, "Employee ID: ");
+        Employee employee = office.getEmployee(id);
+        if (employee == null){
+            System.out.println("There is no employee with ID: "+ id + ". Try again");
+            return;
+        }
+        String role;
+        if (employee instanceof Doctor) {
+        role = "Doctor";
+        } else if (employee instanceof Nurse) {
+        role = "Nurse";
+        } else {
+        role = "Secretary";
+        }
+            System.out.println("ID: " + employee.getId() + " Name: " + employee.getName() + " Role: " + role);
+    }
+
+    private static void secToday(MedicalOffice office, Scanner scanner) {}
+    // office.getToday() -> print
     private static void secEmergency(MedicalOffice office, Scanner scanner) {
         int id = readInt(scanner, "Patient ID: ");
         if (office.addEmergency(id)) {
@@ -178,9 +201,7 @@ public class Main{
             System.out.println("Could not add: patient not registered or already an emergency.");
         }
     }
-
-    private static void secToday(MedicalOffice office, Scanner scanner) {}
-    // office.getToday() -> print
+    //NURSE OPERATIONS
 
     // office.getWaiting() -> print
     private static void nurWaiting(MedicalOffice office, Scanner scanner) {
@@ -194,6 +215,8 @@ public class Main{
             System.out.println((i + 1) + ". " + waiting.get(i));
         }
     }
+
+
    // office.getAvailable() -> print each
     private static void nurAvailableDoctors(MedicalOffice office, Scanner scanner) {
         List<Doctor> available = office.showAvailableDoctors();
