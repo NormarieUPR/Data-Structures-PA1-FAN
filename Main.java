@@ -37,6 +37,8 @@ public class Main{
             int opt = readMenu(scanner, "====Secretary====", 
                     "Register new patient",
                     "Register new employee",
+                    "Show All Doctors",
+                    "Remove Doctor",
                     "Schedule appointment",
                     "Cancel appointment",
                     "Check in patient",
@@ -47,13 +49,15 @@ public class Main{
             switch (opt) {
                 case 1 -> secRegisterPatient(office, scanner);
                 case 2 -> secRegisterEmployee(office, scanner);
-                case 3 -> secSchedule(office, scanner);
-                case 4 -> secCancel(office, scanner);
-                case 5 -> secCheckIn(office, scanner);
-                case 6 -> secEmergency(office, scanner);
-                case 7 -> patientHistory(office, scanner);
-                case 8 -> secToday(office, scanner);
-                case 9 -> running = false;
+                case 3 -> secShowAllDoctors(office, scanner);
+                case 4 -> secRemoveDoctor(office, scanner);
+                case 5 -> secSchedule(office, scanner);
+                case 6 -> secCancel(office, scanner);
+                case 7 -> secCheckIn(office, scanner);
+                case 8 -> secEmergency(office, scanner);
+                case 9 -> patientHistory(office, scanner);
+                case 10 -> secToday(office, scanner);
+                case 11 -> running = false;
                 default -> System.out.println("Invalid. Try again.");
             }
         }
@@ -124,14 +128,29 @@ public class Main{
         if(role == Roles.DOCTOR){
             int specChoice = readMenu(scanner, "Specialty", "General", "Pediatric", "Neuro-opthalmologist", "Retinologist");
             specialty = switch(specChoice) {
-                case 1 -> Specialty.OFTALMOLOGO_GENERAL;
-                case 2 -> Specialty.OFTALMOLOGO_PEDIATRICO;
-                case 3 -> Specialty.NEURO_OFTALMOLOGO;
-                default -> Specialty.RETINOLOGO;
+                case 1 -> Specialty.GENERAL_OPHTHALMOLOGIST;
+                case 2 -> Specialty.PEDIATRIC_OPHTHALMOLOGIST;
+                case 3 -> Specialty.NEURO_OPHTHALMOLOGIST;
+                default -> Specialty.RETINOLOGIST;
             };
         }
             Employee e = office.registerEmployee(name, role, specialty);
             System.out.println("Registered " + role + ". Employee ID:" + e.getId());
+    }
+    // Show all available doctors that are registered 
+    private static void secShowAllDoctors(MedicalOffice office, Scanner scanner) {
+        office.showAllDoctors();
+    }
+    // ask for id -> call office.removeDoctor() -> print confirmation
+    private static void secRemoveDoctor(MedicalOffice office, Scanner scanner) {
+        int id = readInt(scanner, "Insert the ID of the doctor you wish to remove: ");
+        if(office.removeDoctor(id) == true){
+            System.out.println("Succesfully removed doctor with ID:" + id);
+        }
+        else{
+            System.out.println("Invalid ID try again.");
+            return; 
+        }
     }
     private static void secSchedule(MedicalOffice office, Scanner scanner) {}
     // ask for patient -> choose specialty -> list doctors -> pick one
@@ -193,11 +212,11 @@ public class Main{
     private static void nurFindBySpecialty(MedicalOffice office, Scanner scanner) {
         int choice = readMenu(scanner, "Specialty", "General", "Pediatric", "Neuro-opthalmologist", "Retinologist");
         Specialty specialty = switch (choice){
-            case 1 -> Specialty.OFTALMOLOGO_GENERAL;
-            case 2 -> Specialty.OFTALMOLOGO_PEDIATRICO;
-            case 3 -> Specialty.NEURO_OFTALMOLOGO;
-            case 4 -> Specialty.RETINOLOGO;
-            default ->Specialty.OFTALMOLOGO_GENERAL;
+            case 1 -> Specialty.GENERAL_OPHTHALMOLOGIST;
+            case 2 -> Specialty.PEDIATRIC_OPHTHALMOLOGIST;
+            case 3 -> Specialty.NEURO_OPHTHALMOLOGIST;
+            case 4 -> Specialty.RETINOLOGIST;
+            default ->Specialty.GENERAL_OPHTHALMOLOGIST;
         };
 
         List<Doctor> doctors = office.findDoctorsBySpecialty(specialty);
