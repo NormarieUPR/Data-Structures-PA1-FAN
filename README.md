@@ -18,9 +18,12 @@ El sistema cuenta con tres tipos de usuarios:
 | Requisito | Estructura |
 |---|---|
 | Empleados y pacientes por ID | `HashMap` |
-| Fila de espera (primero en llegar, primero en ser atendido) | `ArrayDeque` |
+| Fila de espera (primero en llegar, primero en ser atendido) | `ArrayDeque` + `HashSet` (verificar si ya está en la fila) |
 | Pacientes de emergencia (mayor prioridad primero) | `PriorityQueue` |
-| Citas por ID | `HashMap` |
+| Citas por ID y agenda del médico (ordenada por hora) | `HashMap` + `TreeMap` |
+| Pacientes del médico (sin duplicados) | `HashSet` |
+| Historial del paciente (orden de visitas) | `ArrayList` |
+| Visitas recientes (la más reciente primero) | `ArrayDeque` (pila) |
 
 ## Instalación
 
