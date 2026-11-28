@@ -18,7 +18,6 @@ El sistema cuenta con tres tipos de usuarios:
 | Empleados y pacientes por ID | `HashMap` |
 | Fila de espera (primero en llegar, primero en ser atendido) | `ArrayDeque` |
 | Pacientes de emergencia (mayor prioridad primero) | `PriorityQueue` |
-| Evitar pacientes duplicados en la fila | `HashSet` |
 | Citas por ID | `HashMap` |
 
 ## Instalación
@@ -82,22 +81,24 @@ No hay variables de ambiente ni archivos de configuración. Los datos se mantien
 
 Universidad de Puerto Rico Recinto de Mayaguez (UPRM)
 
+### Tasks por persona
+
 Normarie: Registros y personal (4 tasks + clases base)
-- [x]. Registrar a un nuevo paciente
-- [x]. Registrar a un nuevo empleado
-- [x]. Buscar un médico por especialidad
-- [x]. Mostrar médicos disponibles
+- [x] Registrar a un nuevo paciente
+- [x] Registrar a un nuevo empleado
+- [x] Buscar un médico por especialidad
+- [x] Mostrar médicos disponibles
 
 Favian: Citas e historial (5 tasks)
-- [x]. Concertar una cita
-- [x]. Cancelar una cita
-- [x]. Registrar la visita médica
-- [x]. Mostrar la historia clínica del paciente
-- [x]. Mostrar las citas de hoy
+- [x] Concertar una cita
+- [x] Cancelar una cita
+- [x] Registrar la visita médica
+- [x] Mostrar la historia clínica del paciente
+- [x] Mostrar las citas de hoy
 
 Alec: Fila de espera y atención (5 tasks)
-- [x]. Registrar a un paciente (la llegada, cuando la secretaria lo registra)
-- [x]. Añadir paciente a la fila de espera
-- [x]. Atender a pacientes de urgencia (bono)
-- [x]. Asignar al paciente a un médico
-- [x]. Mostrar a todos los pacientes en espera
+- [x] Registrar a un paciente (la llegada, cuando la secretaria lo registra)
+- [x] Añadir paciente a la fila de espera
+- [x] Atender a pacientes de urgencia (bono)
+- [x] Asignar al paciente a un médico
+- [x] Mostrar a todos los pacientes en espera
