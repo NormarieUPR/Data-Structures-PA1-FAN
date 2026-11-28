@@ -29,6 +29,7 @@ El sistema cuenta con tres tipos de usuarios:
 1. Clona el repositorio:
    ```bash
    git clone https://github.com/NormarieUPR/Data-Structures-PA1-FAN.git
+   cd Data-Structures-PA1-FAN
    ```
 2. Compila el programa desde la carpeta raíz:
    ```bash
