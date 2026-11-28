@@ -3,7 +3,9 @@
 Nuestro sistema de consultas médicas es óptimo para manejar diferentes citas de pacientes, para brindarles el mejor servicio con nuestros mejores doctores.
 Aquí en la Oftalmología de los Heisenbergs tenemos tecnología de primera línea con un sistema rápido y fácil para registrarse, sacar citas y ver nuestros médicos disponibles.
 
-La applicacion fue desarrollada en Java para administrar operaciones de una clínica oftalmológica. Permite registrar pacientes y empleados, crear citas, administrar la fila de espera, atender pacientes de emergencia y llevar historial médico.
+## Descripción
+
+La aplicación fue desarrollada en Java para administrar operaciones de una clínica oftalmológica. Permite registrar pacientes y empleados, crear citas, administrar la fila de espera, atender pacientes de emergencia y llevar historial médico.
 
 El sistema cuenta con tres tipos de usuarios:
 
